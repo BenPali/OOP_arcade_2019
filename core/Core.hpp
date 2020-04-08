@@ -29,6 +29,7 @@ class Core {
         void setActualGraphic(const std::string &libPath);
         void setActualGame(const std::string &gameLibPath);
         bool readGraphDir();
+        void changeLibFactice(const std::string &libPath);
         ~Core();
     
     protected:

@@ -18,6 +18,7 @@ Core::Core(const std::string &libPath)
     loadGraphicLibrary(libPath, false);
     loadGameLibrary("games/lib_arcade_pacman.so", false);
     _scene = std::make_shared<Controller::Scene>(Controller::Scene::NAME);
+    _actualLib = libPath;
 }
 
 Core::~Core()
@@ -52,6 +53,20 @@ void Core::loadGraphicLibrary(const std::string &libPath = nullptr, bool isOn = 
     }
     _myGraph = _createGraph(_graphLibs, _gameLibs, _start);
     _precedentGraphic = *_actualGraphic;
+}
+
+void Core::changeLibFactice(const std::string &libPath)
+{
+    if (dlopen(libPath.c_str() , RTLD_LAZY) != nullptr) {
+        _myGraph->close();
+    }
+    if (dlclose(_dynamicLibrary) != 0)
+        throw Error("Error : Can't close the lib.");
+    loadGraphicLibrary(libPath);
+    _actualLib = libPath;
+    _myGraph->setMapSize(_myGame->getMapSize());
+    _myGraph->createWindow(_scene, _actualGraphic, _actualGame, _score);
+
 }
 
 void Core::changeLib() // TODO : Parametre à enelver et utiliser une stack contenant les lib dispos 
@@ -149,20 +164,17 @@ void Core::startArcade()
         if (*_scene == Controller::Scene::PACMAN) {
             _myGame->updateGame(key);
             _myGraph->displayMap(_myGame->getMap());
-        }
-
-        if (key == Controller::Key::N) {
-            try {
-                std::cout << _actualLib << std::endl;
-                changeLib(); // Temporaire
-                // changeLib((_actualLib == "lib/lib_arcade_sfml.so") ? "lib/lib_arcade_ncurses.so" : "lib/lib_arcade_sfml.so"); // Temporaire
-            } catch (Error e) {
-                std::cerr << e.what() << std::endl;
+            if (key == Controller::Key::N) {
+                try {
+                    std::cout << _actualLib << std::endl;
+                    changeLibFactice((_actualLib == "lib/lib_arcade_sfml.so") ? "lib/lib_arcade_ncurses.so" : "lib/lib_arcade_sfml.so");
+                } catch (Error e) {
+                    std::cerr << e.what() << std::endl;
+                }
             }
         }
         if (key == Controller::Key::SPACE) {
-            std::cout << "Game Id: " << *_actualGame << "\nGraphic Id: " << *_actualGraphic <<std::endl;
-            std::cout << "Scene : " << *_scene << std::endl;
+            changeLib();
         }
     }
     delete _myGraph;
