@@ -12,14 +12,17 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <memory>
 
 namespace myGame {
+    using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
     class Character {
         public:
             Character(std::map<int, std::map<int, char>> const &_map, char const who, int nb);
             ~Character();
 
-            bool makeMove(Controller::Key key, int resetStatus);
+            bool makeMove(Controller::Key key, int resetStatus, std::shared_ptr<timePoint>);
 
             void setPosition(int x, int y);
             std::pair<int, int> getPosition() const;

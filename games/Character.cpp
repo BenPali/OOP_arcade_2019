@@ -135,20 +135,55 @@ Controller::Key myGame::Character::genRandomDirection()
     return genRandom();
 }
 
-bool myGame::Character::makeMove(Controller::Key key, int resetStatus)
+bool myGame::Character::makeMove(Controller::Key key, int resetStatus, std::shared_ptr<timePoint> _start)
 {
+
+    auto tmp_end = std::chrono::high_resolution_clock::now();
+    auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(tmp_end - *_start);
+
+    // std::cout << "time in pacman = " << time_elapsed.count() << std::endl;
+    // if (time_elapsed.count() >= 100) {
+    //     std::cout << "time in pacman ----- = " << time_elapsed.count() << std::endl;
+    //     *_start = std::chrono::high_resolution_clock::now();
+    // }
+    auto tmp = _lastDirection;
+
     if (key == Controller::Key::OTHER)
         key = _lastDirection;
     else
         _lastDirection = key;
-    if (key == Controller::Key::Z)
-        return moveUp(resetStatus);
-    else if (key == Controller::Key::S)
-        return moveDown(resetStatus);
-    else if (key == Controller::Key::Q)
-        return moveLeft(resetStatus);
-    else if (key == Controller::Key::D)
-        return moveRight(resetStatus);
+    if (key == Controller::Key::Z) {
+        if (time_elapsed.count() >= 200) {
+            *_start = std::chrono::high_resolution_clock::now();
+            if (moveUp(resetStatus) == false)
+                _lastDirection = tmp;
+            return (true);
+        }
+    }
+    else if (key == Controller::Key::S) {
+        if (time_elapsed.count() >= 200) {
+            *_start = std::chrono::high_resolution_clock::now();
+            if (moveDown(resetStatus) == false)
+                _lastDirection = tmp;
+            return (true);
+        }
+    }
+    else if (key == Controller::Key::Q) {
+        if (time_elapsed.count() >= 200) {
+            *_start = std::chrono::high_resolution_clock::now();
+            if (moveLeft(resetStatus) == false)
+                _lastDirection = tmp;
+            return (true);
+        }
+    }
+    else if (key == Controller::Key::D) {
+        if (time_elapsed.count() >= 200) {
+            *_start = std::chrono::high_resolution_clock::now();
+            if (moveRight(resetStatus) == false)
+                _lastDirection = tmp;
+            return (true);
+        }
+    }
     return false;
 }
 

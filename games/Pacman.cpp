@@ -28,14 +28,22 @@ myGame::Pacman::~Pacman()
 
 bool myGame::Pacman::updateGame(Controller::Key key)
 {
-    if (_player->getResetStatus() == 1)
-        std::cout << "exit le jeu" << std::endl;
-    updatePlayer(key, _ghost[0]->getResetStatus());
-    updateGhost(key, _player->getResetStatus());
+    // if (_player->getResetStatus() == 1)
+    //     std::cout << "exit le jeu" << std::endl;
 
+    updatePlayer(key, _ghost[0]->getResetStatus());
+    updateGhost(key, _ghost[0]->getResetStatus());
+
+    // auto tmp_end = std::chrono::high_resolution_clock::now();
+    // auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(tmp_end - *_start);
+
+    // std::cout << "time in pacman = " << time_elapsed.count() << std::endl;
+    // if (time_elapsed.count() >= 100) {
+    //     std::cout << "time in pacman ----- = " << time_elapsed.count() << std::endl;
+    //     *_start = std::chrono::high_resolution_clock::now();
+    // }
     // auto end = std::chrono::high_resolution_clock::now();
-    // std::cout << "start = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - *_start).count() << std::endl;
-    // if (std::chrono::duration_cast<std::chrono::milliseconds>(end - *_start).count() > 50) {
+    // if (std::chrono::duration_cast<std::chrono::milliseconds>(end - *_start).count() > 500) {
     //     updatePlayer(key, _ghost[0]->getResetStatus());
     //     // *_start = std::chrono::high_resolution_clock::now();
     // }
@@ -50,7 +58,7 @@ bool myGame::Pacman::updateGame(Controller::Key key)
 bool myGame::Pacman::updatePlayer(Controller::Key const &key, int resetStatus)
 {
     _player->setMap(_map);
-    if (_player->makeMove(key, resetStatus) == true) {
+    if (_player->makeMove(key, resetStatus, _start) == true) {
         _map = _player->getMap();
         return true;
     }
@@ -69,7 +77,7 @@ bool myGame::Pacman::updateGhost(Controller::Key const &key, int resetStatus)
     //     _map = _ghost[0]->getMap();
     // }
     _ghost[0]->setMap(_map);
-    if (_ghost[0]->makeMove(_ghost[0]->genRandomDirection(), resetStatus) == true) {
+    if (_ghost[0]->makeMove(_ghost[0]->genRandomDirection(), resetStatus, _start) == true) {
         _map = _ghost[0]->getMap();
     }
     // _ghost[1]->setMap(_map);
